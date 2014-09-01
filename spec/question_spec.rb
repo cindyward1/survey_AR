@@ -1,8 +1,7 @@
 require "spec_helper"
 
 describe Question do
-	it "requires question text to be saved to the database" do
-		test_question = Question.new(:question_text=>"")
-		expect(test_question.save).to eq false
-	end
+	it { should belong_to :survey}
+	it { should have_many :responses }
+	it { should validate_presence_of :question_text }
 end

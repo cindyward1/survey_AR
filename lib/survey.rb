@@ -1,4 +1,5 @@
 class Survey < ActiveRecord::Base
 	has_many :questions
-	validates :name, :presence=>true
+	has_many :responses, through: :questions
+	validates :name, :presence=>true, :uniqueness=>true
 end
