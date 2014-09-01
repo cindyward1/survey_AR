@@ -1,6 +1,6 @@
 class Response < ActiveRecord::Base
-	belongs_to :question
-	validates :response_text, :presence=>true, length: { maximum: 1 }
+  belongs_to :question
+  validates :response_text, :presence=>true, length: { maximum: 1 }
 
   after_create do |response|
     puts "The response was added to the database"
