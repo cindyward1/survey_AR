@@ -14,7 +14,7 @@ survey\_AR
 * ./Gemfile.lock (list of gems and versions actually installed by bundler; please see below for more information)
 * ./LICENSE.md (using the "Unlicense" template)
 * ./Rakefile (configuration information used by 'rake' utility)
-* ./survey.rb (main application file)
+* ./survey_menu.rb (main application file)
 * ./db/config.yml (database configuration file showing the names of the development and test databases)
 * ./db/schema.rb (database schema)
 * ./db/migrate/*.rb (database migrations, which show the development of the database step-by-step. These are stored in the database as an additional table. The names are preceded by time stamps so they vary)
@@ -46,12 +46,13 @@ survey\_AR
  * **$: source ~/.bash\_profile**
 * To start the PostgreSQL server, enter the following at a terminal application prompt **$: postgres** . It is necessary to leave the window open for the server to continue to run. To create a database with the user's login name, enter the following at a teriminal application prompt **$: createdb $USER**
 
-* [Bundler](http://bundler.io/) tracks and installs the exact gems and versions that are needed. To install Bundler, enter the following at a terminal application prompt **$: gem install bundler**
+* [Bundler](http://bundler.io) tracks and installs the exact gems and versions that are needed. To install Bundler, enter the following at a terminal application prompt **$: gem install bundler**
 * The following gems from http://rubygems.org will be automatically installed by entering the following at a terminal application prompt **$: bundle install**
- * [activerecord](https://rubygems.org/gems/activerecord), which maps database tables to Ruby classes
- * [pg](https://rubygems.org/gems/pg), which implements the Ruby interface to the PostgreSQL database
- * [rake](https://rubygems.org/gems/rake), which controls the generation of executables and other non-source files from a program's source files
- * [active\_record\_migrations](https://rubygems.org/gems/active\_record\_migrations), to allow the use of Active Record migrations in non-Rails projects
+ * [activerecord](https://rubygems.org/gems/activerecord) maps database tables to Ruby classes
+ * [pg](https://rubygems.org/gems/pg) implements the Ruby interface to the PostgreSQL database
+ * [rake](https://rubygems.org/gems/rake) controls the generation of executables and other non-source files from a program's source files
+ * [active\_record\_migrations](https://rubygems.org/gems/active\_record\_migrations) allows the use of Active Record migrations in non-Rails projects
+ * [titleize](bygems.org/gems/titleize) adds String#titleize for creating properly capitalized titles (used for survey designer, survey taker, and survey names)
  * (test configuration only) [rspec](https://rubygems.org/gems/rspec) is a testing tool for the Ruby language.
  * (test configuration only) [shoulda-matchers](http://robots.thoughtbot.com/shoulda-matchers-2-6-0) "makes tests easy on the fingers and eyes" by simplifying the expression of rspec test conditions to be met.
 
