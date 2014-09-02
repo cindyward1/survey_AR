@@ -2,6 +2,7 @@ class Survey < ActiveRecord::Base
   belongs_to :survey_designer
   has_many :questions
   has_many :responses, through: :questions
+  has_many :taken_surveys
   validates :name, :presence => true, :uniqueness => true, length: { maximum: 25 }
 
   after_create do |survey|
