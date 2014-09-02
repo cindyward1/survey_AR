@@ -79,29 +79,28 @@ end
 def survey_menu
   current_survey = nil
   option = nil
-  while option != "B" && option != 'X'
+  while option != "P" && option != 'X'
     puts "\nSURVEY MENU"
     puts "Enter 'C' to create a new survey"
-    puts "Enter 'E' to view or edit an existing survey"
     puts "Enter 'L' to list all surveys in the database"
     puts "Enter 'Q' to list all of the questions for a survey"
+    puts "Enter 'E' to view or edit an existing survey (including list of questions)"
     puts "Enter 'D' to delete a survey"
-    puts "Enter 'B' to go back to the previous menu"
+    puts "Enter 'P' to go to the previous menu"
     puts "Enter 'X' to exit the program\n"
     option = gets.chomp.upcase
     case option
     when 'C'
       create_survey
-    when 'E'
-      edit_survey
     when 'L'
       list_all_surveys
     when 'Q'
-      current_survey = get_survey_from_name
       list_questions_for_survey(current_survey)
+    when 'E'
+      edit_survey
     when 'D'
       delete_survey
-    when 'B'
+    when 'P'
     when 'X'
       exit_program
     else
@@ -125,39 +124,6 @@ def create_survey
   end
 end
 
-def edit_survey
-  option = nil
-  while option != "B" && option != 'X'
-    puts "\nEDIT SURVEY"
-    puts "Enter 'N' to change the name of the survey"
-    puts "Enter 'Q' to go to the question menu (to add, edit or delete questions)"
-    puts "Enter 'B' to go back to the previous menu"
-    puts "Enter 'X' to exit the program\n"
-    option = gets.chomp.upcase
-    case option
-    when 'N'
-      current_survey = get_survey_from_name
-      if !current_survey.nil?
-        change_survey_name(current_survey)
-      else
-        option = "B"
-      end
-    when 'Q'
-      current_survey = get_survey_from_name
-      if !current_survey.nil?
-        question_menu(current_survey)
-      else
-        option = "B"
-      end
-    when 'B'
-    when 'X'
-      exit_program
-    else
-      "\nInvalid option entered, try again"
-    end
-  end
-end
-
 def get_survey_from_name
   current_survey = nil
   puts "\nEnter the name of the survey"
@@ -169,18 +135,6 @@ def get_survey_from_name
     current_survey = survey_array.first
   end
   current_survey
-end
-
-def change_survey_name(current_survey)
-  puts "\nCHANGE SURVEY NAME"
-  puts "Enter the new survey name (25 character maximum)\n"
-  new_name = gets.chomp.titleize
-  if !current_survey.update(:name=>new_name)
-    puts "Please fix these errors:"
-    current_survey.errors.full_messages.each do |message|
-      puts "#{message}"
-    end
-  end
 end
 
 def list_all_surveys
@@ -197,7 +151,11 @@ def list_all_surveys
 end
 
 def list_questions_for_survey(current_survey)
+  question_array = []
   puts "\nLIST QUESTIONS FOR A SURVEY"
+  if current_survey.nil?
+    current_survey = get_survey_from_name
+  end
   if !current_survey.nil?
     puts "\nFor survey #{current_survey.name}, the questions are"
     question_array = current_survey.questions.order(:id)
@@ -206,11 +164,56 @@ def list_questions_for_survey(current_survey)
         puts "#{index+1}. #{question.question_text}"
       end
     else
-      puts "There are no questions for the survey\n"
+      puts "There are no questions for survey #{current_survey.name} in the database\n"
     end
     puts "\n"
   end
   question_array
+end
+
+def edit_survey
+  option = nil
+  while option != "P" && option != 'X'
+    puts "\nEDIT SURVEY"
+    puts "Enter 'N' to change the name of the survey"
+    puts "Enter 'Q' to go to the question menu (to add, edit or delete questions)"
+    puts "Enter 'P' to go back to the previous menu"
+    puts "Enter 'X' to exit the program\n"
+    option = gets.chomp.upcase
+    case option
+    when 'N'
+      current_survey = get_survey_from_name
+      if !current_survey.nil?
+        change_survey_name(current_survey)
+      else
+        option = "P"
+      end
+    when 'Q'
+      current_survey = get_survey_from_name
+      if !current_survey.nil?
+        question_menu(current_survey)
+      else
+        option = "P"
+      end
+    when 'P'
+    when 'X'
+      exit_program
+    else
+      "\nInvalid option entered, try again"
+    end
+  end
+end
+
+def change_survey_name(current_survey)
+  puts "\nCHANGE SURVEY NAME"
+  puts "Enter the new survey name (25 character maximum)\n"
+  new_name = gets.chomp.titleize
+  if !current_survey.update(:name=>new_name)
+    puts "Please fix these errors:"
+    current_survey.errors.full_messages.each do |message|
+      puts "#{message}"
+    end
+  end
 end
 
 def delete_survey
@@ -219,8 +222,8 @@ def delete_survey
   if !current_survey.nil?
     puts "\nAre you sure you want to delete this survey from the database?"
     puts "Enter 'Y' or 'YES' to delete (any other key will skip the deletion)"
-    response = gets.chomp.slice(0,1).upcase
-    if response == "Y"
+    answer = gets.chomp.slice(0,1).upcase
+    if answer == "Y"
       delete_all_questions(current_survey)
       current_survey.destroy
     else
@@ -232,31 +235,41 @@ end
 def question_menu(current_survey)
   current_question = nil
   option = nil
-  while option != "B" && option != 'X'
+  while option != "Please" && option != 'X'
     puts "\nQUESTION MENU"
     puts "Enter 'C' to create a question"
-    puts "Enter 'E' to edit the text of a question"
     puts "Enter 'L' to list all of the responses for a question"
-    puts "Enter 'D' to delete a question"
+    puts "Enter 'S' to list all of the questions for a survey"
+    puts "Enter 'E' to edit the text of a question"
     puts "Enter 'R' to go to the response menu (to add, edit or delete responses)"
-    puts "Enter 'B' to go back to the previous menu"
+    puts "Enter 'D' to delete a question"
+    puts "Enter 'P' to go back to the previous menu"
     puts "Enter 'X' to exit the program\n"
     option = gets.chomp.upcase
-    if current_survey.nil? && option != "B" && option != "X"
+    if current_survey.nil? && option != "P" && option != "X" && option != "R"
       current_survey = get_survey_from_name
     elsif option == "X"
       exit_program
     end
-    if option != "B" && !current_survey.nil?
+    if option != "P" && !current_survey.nil? || option == "R"
+      if !current_survey.nil?
+        puts "\nCurrent survey is #{current_survey.name}\n"
+      end
       case option
       when 'C'
         create_question(current_survey)
-      when 'E'
-        edit_question_text(current_survey)
+        current_survey = nil
       when 'L'
         list_responses_for_question(current_survey)
+        current_survey = nil
+      when 'S'
+        list_questions_for_survey(current_survey)
+      when 'E'
+        edit_question_text(current_survey)
+        current_survey = nil
       when 'D'
         delete_question(current_survey)
+        current_survey = nil
       when 'R'
         response_menu(current_question)
       else
@@ -269,26 +282,30 @@ end
 def create_question(current_survey)
   option = nil
   puts "\nCREATE QUESTION"
-  while option != "B" && option != "X"
+  while option != "P" && option != "X"
     puts "Enter text for the question (100 character maximum)"
     input_text = gets.chomp
     new_question = Question.new(:question_text => input_text, :survey_id => current_survey.id)
     if new_question.save
-      create_responses(new_question)
+      create_response(new_question)
     else
      puts "Please fix these errors:"
       new_question.errors.full_messages.each do |message|
         puts "#{message}"
       end
     end
-    puts "Enter 'B' to stop adding questions to the survey #{current_survey.name} and go back to the main menu"
-    puts "Enter 'X' to enter the program"
+    puts "\nEnter 'P' to go to the previous menu or enter 'X' to exit the program"
     puts "Enter any other character to continue adding questions to the survey #{current_survey.name}"
     option = gets.chomp.upcase
+    if option == 'X'
+      exit_program
+    end
   end
 end
 
 def edit_question_text(current_survey)
+  puts "\nEDIT QUESTION TEXT"
+  question_array = []
   question_array = list_questions_for_survey(current_survey)
   if !question_array.empty?
     puts "\nSelect the index of the question whose text you'd like to change"
@@ -301,7 +318,7 @@ def edit_question_text(current_survey)
       input_text = gets.chomp
       if !current_question.update(:question_text=>input_text)
         puts "Please fix these errors:"
-        current_survey.errors.full_messages.each do |message|
+        current_question.errors.full_messages.each do |message|
           puts "#{message}"
         end
       end
@@ -310,6 +327,32 @@ def edit_question_text(current_survey)
 end
 
 def list_responses_for_question(current_survey)
+  puts "\nLIST RESPONSES FOR A QUESTION"
+  response_array = []
+  question_array = list_questions_for_survey(current_survey)
+  if !question_array.empty?
+    puts "\nSelect the index of the question whose responses you'd like to list"
+    question_index = gets.chomp.to_i
+    if question_index == 0 || question_index > question_array.length
+      puts "\nInvalid index selected, try again"
+    else
+      current_question = question_array[question_index-1]
+    end
+    if !current_question.nil?
+      puts "\nSurvey #{current_question.survey.name}, question text '#{current_question.question_text}' has " +
+           "#{current_question.responses.count} responses:"
+      response_array = current_question.responses.order(:response_letter)
+      if !response_array.empty?
+        response_array.each_with_index do |response, index|
+          puts "#{index+1}. #{response.response_letter}: '#{response.response_text}'"
+        end
+        puts "\n"
+      else
+        puts "There are no responses for the question\n"
+      end
+    end
+  end
+  response_array
 end
 
 def delete_all_questions(current_survey)
@@ -325,9 +368,9 @@ def delete_question(current_survey)
   current_question = nil
   puts "\nDELETE QUESTION"
   question_array = list_questions_for_survey(current_survey)
-  puts "\nSelect the index of the question you'd like to delete"
-  question_index = gets.chomp.to_i
   if !question_array.empty?
+    puts "\nSelect the index of the question you'd like to delete"
+    question_index = gets.chomp.to_i
     if question_index == 0 || question_index > question_array.length
       puts "\nInvalid index selected, try again"
     else
@@ -336,8 +379,8 @@ def delete_question(current_survey)
     if !current_question.nil?
       puts "\nAre you sure you want to delete this survey from the database?"
       puts "Enter 'Y' or 'YES' to delete (any other key will skip the deletion)"
-      response = gets.chomp.slice(0,1).upcase
-      if response == "Y"
+      answer = gets.chomp.slice(0,1).upcase
+      if answer == "Y"
         delete_all_responses(current_question)
         current_question.destroy
       else
@@ -346,16 +389,195 @@ def delete_question(current_survey)
     else
       puts "\nAn invalid question was selected, try again"
     end
-  end
+  else
+    puts "There are no questions for survey #{current_survey.name} in the database"
+  end 
 end
 
 def response_menu(current_question)
+  option = nil
+  current_response = nil
+  if !current_question.nil?
+    current_survey = current_question.survey
+  else
+    current_survey = nil
+  end
+  while option != "P" && option != 'X'
+    puts "\nRESPONSE MENU"
+    puts "Enter 'C' to create a response"
+    puts "Enter 'L' to list all of the responses for a question"
+    puts "Enter 'R' to edit the letter of a response"
+    puts "Enter 'T' to edit the text of a response"
+    puts "Enter 'D' to delete a response"
+    puts "Enter 'P' to go back to the previous menu"
+    puts "Enter 'X' to exit the program\n"
+    option = gets.chomp.upcase
+    if option != "P" && option != "X" && !current_survey.nil?
+      puts "\nCurrent survey is #{current_survey.name}\n"
+    end
+    if option != "P" && option != "X" && !current_question.nil?
+      puts "\nCurrent question is #{current_question.text}\n"
+    end
+    case option
+    when 'C'
+      create_response(current_question)
+      current_survey = nil
+    when 'L'
+      list_responses_for_question(current_survey)
+      current_survey = nil
+    when 'R'
+      edit_response_letter(current_question)
+      current_survey = nil
+    when 'T'
+      edit_response_text(current_question)
+      current_survey = nil
+    when 'D'
+      delete_response(current_question)
+      current_survey = nil
+    when 'P'
+    when 'X'
+      exit_program
+    else
+      "\nInvalid option entered, try again"
+    end
+  end
 end
 
-def create_responses(current_question)
+def create_response(current_question)
+  option = nil
+  current_survey = nil
+  puts "\nCREATE RESPONSE"
+  while option != "P" && option != "X"
+    if current_question.nil?
+      question_array = list_questions_for_survey(current_survey)
+      if !question_array.empty?
+        puts "\nSelect the index of the question to which you'd like to add a response"
+        question_index = gets.chomp.to_i
+        if question_index == 0 || question_index > question_array.length
+          puts "\nInvalid index selected, try again"
+        else
+          current_question = question_array[question_index-1]
+        end
+      end
+    end
+    input_letter = get_next_letter(current_question)
+    puts "The next letter response will be #{input_letter}"
+    puts "Enter text for the response (50 character maximum)"
+    input_text = gets.chomp
+    new_response = Response.new(:response_letter => input_letter, :response_text => input_text, :question_id => current_question.id)
+    if !new_response.save
+    puts "Please fix these errors:"
+      new_response.errors.full_messages.each do |message|
+        puts "#{message}"
+      end
+    end
+    puts "\nEnter 'P' to go back to the previous menu or enter 'X' to enter the program"
+    puts "Enter any other character to continue adding responses to the current question"
+    option = gets.chomp.upcase
+    if option == 'X'
+      exit_program
+    end
+  end
+end
+
+def get_next_letter(current_question)
+  response_array = []
+  response_array = current_question.responses.order(:response_letter)
+  if response_array.empty?
+    return "A"
+  else
+    return response_array.last.response_letter.next
+  end
+end
+
+def edit_response_letter(current_question)
+  response_array = list_responses_for_question(current_question)
+  if !response_array.empty?
+    puts "\nSelect the index of the response whose letter you'd like to change"
+    response_index = gets.chomp.to_i
+    if response_index == 0 || response_index > response_array.length
+      puts "\nInvalid index selected, try again"
+    else
+      current_response = response_array[response_index-1]
+      puts "\nEnter the new text for the response"
+      input_letter = gets.chomp.slice(0,1).upcase
+      if !current_response.update(:response_letter=>input_letter)
+        puts "Please fix these errors:"
+        current_response.errors.full_messages.each do |message|
+          puts "#{message}"
+        end
+      end
+    end
+  end
+end
+
+def edit_response_text(current_question)
+  response_array = list_responses_for_question(current_question)
+  if !response_array.empty?
+    puts "\nSelect the index of the response whose text you'd like to change"
+    response_index = gets.chomp.to_i
+    if response_index == 0 || response_index > response_array.length
+      puts "\nInvalid index selected, try again"
+    else
+      current_response = response_array[response_index-1]
+      puts "\nEnter the new text for the response (50 character maximum)"
+      input_text = gets.chomp
+      if !current_response.update(:response_text=>input_text)
+        puts "Please fix these errors:"
+        current_response.errors.full_messages.each do |message|
+          puts "#{message}"
+        end
+      end
+    end
+  end
 end
 
 def delete_all_responses(current_question)
+  if !current_question.responses.empty?
+    current_question.responses.each do |response|
+      response.delete
+    end
+  end
+end
+
+def delete_response(current_question)
+  current_response = nil
+  puts "\nDELETE RESPONSE"
+  if current_question.nil?
+    current_survey = nil
+    question_array = list_questions_for_survey(current_survey)
+    if !question_array.empty?
+      puts "\nSelect the index of the question from which you'd like to delete a response"
+      question_index = gets.chomp.to_i
+      if question_index == 0 || question_index > question_array.length
+        puts "\nInvalid index selected, try again"
+      else
+        current_question = question_array[question_index-1]
+      end
+    end
+  end
+  response_array = list_responses_for_question(current_question.survey)
+  puts "\nSelect the index of the response you'd like to delete"
+  response_index = gets.chomp.to_i
+  if !response_array.empty?
+    if response_index == 0 || response_index > response_array.length
+      puts "\nInvalid index selected, try again"
+    else
+      current_response = response_array[response_index-1]
+    end
+    if !current_response.nil?
+      puts "\nAre you sure you want to delete this survey from the database?"
+      puts "Enter 'Y' or 'YES' to delete (any other key will skip the deletion)"
+      answer = gets.chomp.slice(0,1).upcase
+      if answer == "Y"
+        current_response.destroy
+      else
+        puts "\nNothing was deleted"
+      end
+    else
+      puts "\nAn invalid question was selected, try again"
+    end
+  end
 end
 
 def exit_program

@@ -1,7 +1,7 @@
 class Question < ActiveRecord::Base
   belongs_to :survey
   has_many :responses
-  validates :question_text, :presence=>true, length: { maximum: 100 }
+  validates :question_text, :presence => true, length: { maximum: 100 }
 
   after_create do |question|
     puts "The question was added to the database"
