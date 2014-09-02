@@ -71,6 +71,7 @@ This Ruby application implements a character user interface to a survey applicat
 * Add questions to the survey to find out what people think about them.
 * Add possible responses to each question to structure people's opinions into discrete choices that they must choose among. All questions are multiple-choice with only 1 choice to be selected
 * View the number and percentage of respondents who picked each possible response to each question to see the results of the survey.
+
 ### The survey taker is able to:
 * Choose what survey to take to give the surveyor their opinion.
 * View one question at a time to keep from getting distracted by other questions.
