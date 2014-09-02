@@ -9,10 +9,10 @@ development_configuration = database_configurations['development']
 ActiveRecord::Base.establish_connection(development_configuration)
 
 def welcome
-  today = Date.today
+  @today = Date.today
   puts "\n"
   puts "*" * 50
-  puts "  Welcome to Cindy's Survey Company #{today}"
+  puts "  Welcome to Cindy's Survey Company #{@today}"
   puts "*" * 50
   puts "\n"
   main_menu
@@ -142,12 +142,13 @@ def list_all_surveys
   all_surveys = Survey.all.order(:name)
   if !all_surveys.empty?
     all_surveys.each_with_index do |survey, index|
-      puts "#{index+1}. #{survey.name}, #{survey.questions.count} questions"
+      puts "#{index+1}. #{survey.name}, #{survey.questions.count} question(s)"
     end
     puts "\n"
   else
     puts "\nThere are no surveys in the database\n"
   end
+  all_surveys
 end
 
 def list_questions_for_survey(current_survey)
@@ -587,7 +588,7 @@ def taker_menu
   taker_array = SurveyTaker.where("name = ?", input_name)
   if taker_array.empty?
     puts "\nYou have never taken a survey before from Cindy's Survey Company"
-    puts "Please enter your phone number for our records (10-digit format including area code)"
+    puts "Please enter your phone number for our records (10-digit ddd-ddd-dddd format)"
     input_phone = gets.chomp
     if input_phone =~ /\d\d\d-\d\d\d-\d\d\d\d/
       @current_taker = SurveyTaker.create(:name => input_name, :phone_number => input_phone)
@@ -599,7 +600,7 @@ def taker_menu
     @current_taker = taker_array.first
   end
   while option != 'M' && option != 'X'
-    puts "\nDESIGNER MENU"
+    puts "\nSURVEY TAKER MENU"
     puts "Enter 'T' to select a survey to take"
     puts "Enter 'R' to review the surveys you have taken"
     puts "Enter 'M' to go to the main menu"
@@ -615,6 +616,65 @@ def taker_menu
       exit_program
     else
       puts "\nInvalid option entered, try again"
+    end
+  end
+end
+
+def take_survey
+  survey_finished = false
+  all_surveys = []
+  all_surveys = list_all_surveys
+  if !all_surveys.empty?
+    puts "\nSelect the index of the survey you would like to take"
+    survey_index = gets.chomp.to_i
+    if survey_index == 0 || survey_index > all_surveys.length
+      puts "\nInvalid index selected, please try again"
+    else
+      current_survey = all_surveys[survey_index-1]
+      if !current_survey.taken
+        puts "#{@current_taker.name}, you are the first person to take this survey!"
+        puts "Please be sure to report any errors to the designer, #{current_survey.survey_designer.name}"
+      end
+      survey_finished = show_questions_and_capture_responses(current_survey)
+      if survey_finished
+        current_survey.update(:taken => true)
+        new_survey_taken = TakenSurvey.create(:date => @today, :survey_id => current_survey.id, :survey_taker_id => @current_taker.id)
+        puts "\nThank you for completing the survey about #{current_survey.name}."
+        puts "We greatly appreciate your opinions!\n"
+      else
+        puts "\nYou did not finish the survey. You may retake it, but you will have to start again from the beginning\n"
+      end
+    end
+  else
+    puts "\nThere are no surveys in the database"
+  end
+end
+
+def show_questions_and_capture_responses(current_survey)
+  return_status = false
+  current_survey.questions.each_with_index do |question, index|
+    puts "\n#{index+1}. #{question.question_text}"
+    puts "Please choose one of the following responses"
+    possible_response_letters = []
+    question.responses.each do |response|
+      puts "#{response.response_letter}. #{response.response_text}"
+      possible_response_letters << response.response_letter
+    end
+    answer_not_valid = true
+    while answer_not_valid
+      puts "\nPlease enter your response"
+      answer = gets.chomp.upcase.slice(0,1)
+      if !possible_response_letters.include?(answer)
+        puts "\nSorry, that is not a valid response. Enter 'X' to exit the program or any other character to try again"
+        option = gets.chomp.upcase
+        if option == 'X'
+          exit_program
+        end
+      else
+        answer_not_valid = false
+        chosen_response = question.responses.find_by(:response_letter => answer)
+        new_chosen_response = ChosenResponse.create(:question_id => question.id, :response_id => chosen_response.id)
+      end
     end
   end
 end
