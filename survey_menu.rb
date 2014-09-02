@@ -580,6 +580,45 @@ def delete_response(current_question)
   end
 end
 
+def taker_menu
+  option = nil
+  puts "\nPlease enter your name (25 character maximum)"
+  input_name = gets.chomp.titleize
+  taker_array = SurveyTaker.where("name = ?", input_name)
+  if taker_array.empty?
+    puts "\nYou have never taken a survey before from Cindy's Survey Company"
+    puts "Please enter your phone number for our records (10-digit format including area code)"
+    input_phone = gets.chomp
+    if input_phone =~ /\d\d\d-\d\d\d-\d\d\d\d/
+      @current_taker = SurveyTaker.create(:name => input_name, :phone_number => input_phone)
+    else
+      puts "\nInvalid format for phone number, try again"
+      option = "M"
+    end
+  else
+    @current_taker = taker_array.first
+  end
+  while option != 'M' && option != 'X'
+    puts "\nDESIGNER MENU"
+    puts "Enter 'T' to select a survey to take"
+    puts "Enter 'R' to review the surveys you have taken"
+    puts "Enter 'M' to go to the main menu"
+    puts "Enter 'X' to exit the program"
+    option = gets.chomp.upcase
+    case option
+    when 'T'
+      take_survey
+    when 'R'
+      review_surveys
+    when 'M'
+    when 'X'
+      exit_program
+    else
+      puts "\nInvalid option entered, try again"
+    end
+  end
+end
+
 def exit_program
   puts "\nThanks for visiting Cindy's Survey Company\n\n"
   exit

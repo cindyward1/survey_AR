@@ -1,5 +1,6 @@
 class Response < ActiveRecord::Base
   belongs_to :question
+  has_one :chosen_response
   validates :response_letter, :presence => true, length: { maximum: 1 }
   validates :response_text, :presence => true, length: { maximum: 50 }
 
