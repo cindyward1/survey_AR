@@ -5,7 +5,7 @@ survey\_AR
 
 * Author: Cindy Ward <cindyward@yahoo.com>
 * Date created: August 31, 2014
-* Last modification date: August 31, 2014
+* Last modification date: September 2, 2014
 * Created for:  Epicodus, Summer 2014 session
 
 ## Included; written by author:
@@ -21,26 +21,27 @@ survey\_AR
 * ./lib/chosen\_response.rb (the Ruby implementation of the ChosenResponse class)
 * ./lib/question.rb (the Ruby implementation of the Question class)
 * ./lib/response.rb (the Ruby implementation of the Response class)
-* ./lib/survey.rb (the Ruby implementation of the Survey class)
 * ./lib/survey\_designer.rb (the Ruby implementation of the SurveyDesigner class)
 * ./lib/survey\_taker.rb (the Ruby implementation of the SurveyTaker class)
+* ./lib/survey.rb (the Ruby implementation of the Survey class)
 * ./lib/taken\_survey.rb (the Ruby implementation of the TakenSurvey class)
 * ./spec/chosen\_response\_spec.rb (the Ruby implementation of the ChosenResponse class)
 * ./spec/question\_spec.rb (the Ruby implementation of the Question class)
 * ./spec/response\_spec.rb (the Ruby implementation of the Response class)
-* ./spec/survey\_spec.rb (the Ruby implementation of the Survey class)
+* ./spec/spec\_helper.rb (utility code for opening database, loading required files, etc.)
 * ./spec/survey\_designer\_spec.rb (the Ruby implementation of the SurveyDesigner class)
+* ./spec/survey\_spec.rb (the Ruby implementation of the Survey class)
 * ./spec/survey\_taker\_spec.rb (the Ruby implementation of the SurveyTaker class)
 * ./spec/taken\_survey\_spec.rb (the Ruby implementation of the TakenSurvey class)
 
 ## Requirements for execution:
-* [The Ruby language interpreter](https://www.ruby-lang.org/en/downloads/) must be installed. Please use version 2.1.2. 
+* [The Ruby language interpreter](https://www.ruby-lang.org/en/downloads/) must be installed. Please use version 2.1.2.
 
 * [git clone](http://github.com/) the image available at http://github.com/cindyward1/survey\_AR, which will create a survey\_AR directory with db, lib and spec subdirectories.
 
-* [Homebrew](http://brew.sh/) is a package installer for Apple computers. To install homebrew, enter the following at a terminal application prompt **$: ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"**
+* [Homebrew](http://brew.sh/) is a package installer for Apple computers. To install homebrew, enter the following at a terminal application prompt **$: ruby -e "$(curl -fsSL 'https://raw.github.com/Homebrew/homebrew/go/install')"**
 
-* [PostgreSQL](http://http://www.postgresql.org/) is a SQL database package. To install PostgreSQL on an Apple computer, enter the following at a terminal application prompt **$: brew install postgres** . To configure PostgreSQL, enter the following commands at a terminal application prompt $: 
+* [PostgreSQL](http://http://www.postgresql.org/) is a SQL database package. To install PostgreSQL on an Apple computer, enter the following at a terminal application prompt **$: brew install postgres** . To configure PostgreSQL, enter the following commands at a terminal application prompt $:
  * **$: echo "export PGDATA=/usr/local/var/postgres" >> ~/.bash\_profile**
  * **$: echo "export PGHOST=/tmp" >> ~/.bash\_profile**
  * **$: source ~/.bash\_profile**
@@ -56,28 +57,26 @@ survey\_AR
  * (test configuration only) [rspec](https://rubygems.org/gems/rspec) is a testing tool for the Ruby language.
  * (test configuration only) [shoulda-matchers](http://robots.thoughtbot.com/shoulda-matchers-2-6-0) "makes tests easy on the fingers and eyes" by simplifying the expression of rspec test conditions to be met.
 
-* To create the database, cd to (clone location)/survey\_AR and enter enter the following at a terminal application prompt **$: rake db:schema:load**
+* To create the database, cd to (clone location)/survey\_AR and enter enter the following at a terminal application prompt **$: rake db:create** followed by **$: rake db:schema:load**
 
 * To run the application, cd to (clone location)/survey\_AR and enter the following at a terminal application prompt **$: ruby survey.rb**
-* You can also test a non-interactive version of the methods against their test cases found in (clone location)/survey\_AR/spec/*.rb using rspec (see gem reference above). Please use version 3.1.1. If you wish to do this, you must first cd to (clone location)/survey\_AR and enter the following at a terminal application **$: rake db:test:prepare** . This will prepare the test version of the database for use. Then to run rspec, cd to (clone location)/survey\_AR and enter the following string at a terminal application **$: "rspec"** (This command will automatically execute any .rb file it finds in ./spec/.)
+* You can also test a non-interactive version of the methods against their test cases found in (clone location)/survey\_AR/spec/\*.rb using rspec (see gem reference above). Please use version 3.1.1. If you wish to do this, you must first cd to (clone location)/survey\_AR and enter the following at a terminal application **$: rake db:test:prepare** . This will prepare the test version of the database for use. Then to run rspec, cd to (clone location)/survey\_AR and enter the following string at a terminal application **$: "rspec"** (This command will automatically execute any .rb file it finds in ./spec/.)
 
 * Please note that this repository has only been tested with [Google Chrome browser](http://www.google.com/intl/en/chrome/browser) version 36.0.1985.125 on an iMac running [Apple](http://www.apple.com) OS X version 10.9.4 (Mavericks). Execution on any other computing platform, browser or operating system is at the user's risk.
 
 ## Description:
-This Ruby application implements a character user interface to a survey application. The user interface is divided into two parts: the actions a survey designer performs to create surveys, and the actions a survey taker performs to "take" the survey by recording responses to the survey questions.
-### The survey designer is able to: 
+This Ruby application implements a character user interface to a survey application. The user interface is divided into two parts: the actions a survey designer performs to create surveys and see statistics about the surveys taken, and the actions a survey taker performs to take the survey by recording responses to the survey questions.
+### The survey designer is able to:
 * Create a new survey to get people's opinion on important matters.
 * Add questions to the survey to find out what people think about them.
-* Add possible responses to each question to structure people's opinions into discrete choices that they must choose among. At this point, all questions are multiple-choice with only 1 choice to be selected
+* Add possible responses to each question to structure people's opinions into discrete choices that they must choose among. All questions are multiple-choice with only 1 choice to be selected
 * View the number and percentage of respondents who picked each possible response to each question to see the results of the survey.
-* Provide the option to let respondents choose multiple answers for each question to allow questions like "Choose all of the programming languages you know."
-* Allow open-ended questions like, "Please explain why you chose to become a programmer."
-* Let respondents choose "Other" for some questions, so that they can input their own choice if the provided choices aren't sufficient.
 ### The survey taker is able to:
 * Choose what survey to take to give the surveyor their opinion.
 * View one question at a time to keep from getting distracted by other questions.
 * Choose among the possible responses for each question to actually input their opinion.
+* Take a given survey only once and be informed of the date it was previously taken.
 
 ##Thanks:
-
-
+* To my wonderful husband Steve Ward for his support, his incredible patience, and for repeatedly testing this program for me.
+* To Dustin Brown for his encouragement.

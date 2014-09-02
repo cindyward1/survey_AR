@@ -57,6 +57,7 @@ def designer_menu
     puts "Enter 'S' to go to the survey menu"
     puts "Enter 'Q' to go to the question menu"
     puts "Enter 'R' to go to the response menu"
+    puts "Enter 'I' to go to the survey information menu"
     puts "Enter 'M' to go to the main menu"
     puts "Enter 'X' to exit the program\n"
     option = gets.chomp.upcase
@@ -67,6 +68,8 @@ def designer_menu
       question_menu(current_survey)
     when 'R'
       response_menu(current_question)
+    when 'I'
+      survey_information_menu
     when 'M'
     when 'X'
       exit_program
@@ -80,7 +83,7 @@ def survey_menu
   current_survey = nil
   option = nil
   while option != "P" && option != 'X'
-    puts "\nSURVEY MENU"
+    puts "\nSURVEY DESIGN MENU"
     puts "Enter 'C' to create a new survey"
     puts "Enter 'L' to list all surveys in the database"
     puts "Enter 'Q' to list all of the questions for a survey"
@@ -236,8 +239,8 @@ end
 def question_menu(current_survey)
   current_question = nil
   option = nil
-  while option != "Please" && option != 'X'
-    puts "\nQUESTION MENU"
+  while option != "P" && option != "X"
+    puts "\nQUESTION DESIGN MENU"
     puts "Enter 'C' to create a question"
     puts "Enter 'L' to list all of the responses for a question"
     puts "Enter 'S' to list all of the questions for a survey"
@@ -295,8 +298,9 @@ def create_question(current_survey)
         puts "#{message}"
       end
     end
-    puts "\nEnter 'P' to go to the previous menu or enter 'X' to exit the program"
-    puts "Enter any other character to continue adding questions to the survey #{current_survey.name}"
+    puts "Enter 'P' to quit adding questions and go back to the previous menu"
+    puts "Enter 'X' to exit the program"
+    puts "Enter any other character to continue adding questions to survey #{current_survey.name}"
     option = gets.chomp.upcase
     if option == 'X'
       exit_program
@@ -340,7 +344,7 @@ def list_responses_for_question(current_survey)
       current_question = question_array[question_index-1]
     end
     if !current_question.nil?
-      puts "\nSurvey #{current_question.survey.name}, question text '#{current_question.question_text}' has " +
+      puts "\nSurvey #{current_question.survey.name}, question '#{current_question.question_text}' has " +
            "#{current_question.responses.count} responses:"
       response_array = current_question.responses.order(:response_letter)
       if !response_array.empty?
@@ -392,7 +396,7 @@ def delete_question(current_survey)
     end
   else
     puts "There are no questions for survey #{current_survey.name} in the database"
-  end 
+  end
 end
 
 def response_menu(current_question)
@@ -403,8 +407,8 @@ def response_menu(current_question)
   else
     current_survey = nil
   end
-  while option != "P" && option != 'X'
-    puts "\nRESPONSE MENU"
+  while option != "P" && option != "X"
+    puts "\nRESPONSE DESIGN MENU"
     puts "Enter 'C' to create a response"
     puts "Enter 'L' to list all of the responses for a question"
     puts "Enter 'R' to edit the letter of a response"
@@ -472,7 +476,8 @@ def create_response(current_question)
         puts "#{message}"
       end
     end
-    puts "\nEnter 'P' to go back to the previous menu or enter 'X' to enter the program"
+    puts "Enter 'P' to quit adding responses and go back to the previous menu"
+    puts "Enter 'X' to exit the program"
     puts "Enter any other character to continue adding responses to the current question"
     option = gets.chomp.upcase
     if option == 'X'
@@ -581,6 +586,77 @@ def delete_response(current_question)
   end
 end
 
+def survey_information_menu
+  option = nil
+  while option != "P" && option != 'X'
+    puts "\nSURVEY INFORMATION MENU"
+    puts "Enter 'L' to list all surveys in the database"
+    puts "Enter 'S' for the statistics for a survey"
+    puts "Enter 'T' for the list of survey takers and number of completed surveys"
+    puts "Enter 'P' to go to the previous menu"
+    puts "Enter 'X' to exit the program\n"
+    option = gets.chomp.upcase
+    case option
+    when 'L'
+      list_all_surveys
+    when 'S'
+      survey_statistics
+    when 'T'
+      see_survey_takers
+    when 'P'
+    when 'X'
+      exit_program
+    else
+      puts "\nInvalid option, try again"
+    end
+  end
+end
+
+def survey_statistics
+  current_survey = nil
+  current_question = nil
+  question_array = []
+  puts "\nLIST RESPONSE STATISTICS FOR A QUESTION"
+  question_array = list_questions_for_survey(current_survey)
+  if !question_array.empty?
+    puts "\nSelect the index of the question whose responses you'd like to list"
+    question_index = gets.chomp.to_i
+    if question_index == 0 || question_index > question_array.length
+      puts "\nInvalid index selected, try again"
+    else
+      current_question = question_array[question_index-1]
+    end
+    total_chosen_responses = ChosenResponse.where("question_id = #{current_question.id}").count
+    if !current_question.nil?
+      puts "\nSurvey #{current_question.survey.name}"
+      puts "Question '#{current_question.question_text}' has " +
+           "#{current_question.responses.count} response(s) and #{total_chosen_responses} chosen response(s)"
+      response_array = current_question.responses.order(:response_letter)
+      if !response_array.empty?
+        response_array.each do |response, index|
+          count_chosen = response.chosen_responses.count
+          percent_chosen = count_chosen.to_f/total_chosen_responses.to_f * 100
+          puts "#{response.response_letter}: '#{response.response_text}', " +
+               "chosen #{count_chosen} time(s), #{percent_chosen.round(2)}%"
+        end
+        puts "\n"
+      else
+        puts "There are no responses for the question\n"
+      end
+    end
+  end
+end
+
+def see_survey_takers
+  taker_list = []
+  puts "\nSURVEY TAKER LIST\n"
+  taker_list = SurveyTaker.all.order(:name)
+  taker_list.each_with_index do |taker, index|
+    puts "#{index+1}. #{taker.name}, number of surveys taken = #{taker.taken_surveys.count}"
+  end
+  puts "\n"
+end
+
 def taker_menu
   option = nil
   puts "\nPlease enter your name (25 character maximum)"
@@ -598,8 +674,9 @@ def taker_menu
     end
   else
     @current_taker = taker_array.first
+    puts "\nWelcome back, #{@current_taker.name}\n"
   end
-  while option != 'M' && option != 'X'
+  while option != "M" && option != "X"
     puts "\nSURVEY TAKER MENU"
     puts "Enter 'T' to select a survey to take"
     puts "Enter 'R' to review the surveys you have taken"
@@ -634,15 +711,25 @@ def take_survey
       if !current_survey.taken
         puts "#{@current_taker.name}, you are the first person to take this survey!"
         puts "Please be sure to report any errors to the designer, #{current_survey.survey_designer.name}"
-      end
-      survey_finished = show_questions_and_capture_responses(current_survey)
-      if survey_finished
-        current_survey.update(:taken => true)
-        new_survey_taken = TakenSurvey.create(:date => @today, :survey_id => current_survey.id, :survey_taker_id => @current_taker.id)
-        puts "\nThank you for completing the survey about #{current_survey.name}."
-        puts "We greatly appreciate your opinions!\n"
       else
-        puts "\nYou did not finish the survey. You may retake it, but you will have to start again from the beginning\n"
+        previous_survey_taken = TakenSurvey.where("survey_id = #{current_survey.id} AND " +
+                                                  "survey_taker_id = #{@current_taker.id}")
+        if !previous_survey_taken.empty?
+          formatted_date = previous_survey_taken.first.date.strftime("%Y-%m-%d")
+          puts "\nYou previously took survey #{current_survey.name} on #{formatted_date}"
+          puts "You may only take a survey once. We value your opinions; please choose a different survey!\n"
+        else
+          survey_finished = show_questions_and_capture_responses(current_survey)
+          if survey_finished
+            current_survey.update(:taken => true)
+            new_survey_taken = TakenSurvey.create(:date => @today, :survey_id => current_survey.id, :survey_taker_id => @current_taker.id)
+            puts "\nThank you for completing the survey about #{current_survey.name}."
+            puts "We greatly appreciate your opinions!\n"
+          else
+            puts "\nYou did not finish the survey."
+            puts "You may retake it, but you will have to start again from the beginning\n"
+          end
+        end
       end
     end
   else
