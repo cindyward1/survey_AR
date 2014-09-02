@@ -48,6 +48,7 @@ def designer_menu
     @current_designer = SurveyDesigner.create(:name => input_name)
   else
     @current_designer = designer_array.first
+    puts "\nWelcome back, #{@current_designer.name}\n"
   end
   current_survey = nil
   current_question = nil
@@ -711,24 +712,23 @@ def take_survey
       if !current_survey.taken
         puts "#{@current_taker.name}, you are the first person to take this survey!"
         puts "Please be sure to report any errors to the designer, #{current_survey.survey_designer.name}"
+      end
+      previous_survey_taken = TakenSurvey.where("survey_id = #{current_survey.id} AND " +
+                                                "survey_taker_id = #{@current_taker.id}")
+      if !previous_survey_taken.empty?
+        formatted_date = previous_survey_taken.first.date.strftime("%Y-%m-%d")
+        puts "\nYou previously took survey #{current_survey.name} on #{formatted_date}"
+        puts "You may only take a survey once. We value your opinions; please choose a different survey!\n"
       else
-        previous_survey_taken = TakenSurvey.where("survey_id = #{current_survey.id} AND " +
-                                                  "survey_taker_id = #{@current_taker.id}")
-        if !previous_survey_taken.empty?
-          formatted_date = previous_survey_taken.first.date.strftime("%Y-%m-%d")
-          puts "\nYou previously took survey #{current_survey.name} on #{formatted_date}"
-          puts "You may only take a survey once. We value your opinions; please choose a different survey!\n"
+        survey_finished = show_questions_and_capture_responses(current_survey)
+        if survey_finished
+          current_survey.update(:taken => true)
+          new_survey_taken = TakenSurvey.create(:date => @today, :survey_id => current_survey.id, :survey_taker_id => @current_taker.id)
+          puts "\nThank you for completing the survey about #{current_survey.name}."
+          puts "We greatly appreciate your opinions!\n"
         else
-          survey_finished = show_questions_and_capture_responses(current_survey)
-          if survey_finished
-            current_survey.update(:taken => true)
-            new_survey_taken = TakenSurvey.create(:date => @today, :survey_id => current_survey.id, :survey_taker_id => @current_taker.id)
-            puts "\nThank you for completing the survey about #{current_survey.name}."
-            puts "We greatly appreciate your opinions!\n"
-          else
-            puts "\nYou did not finish the survey."
-            puts "You may retake it, but you will have to start again from the beginning\n"
-          end
+          puts "\nYou did not finish the survey."
+          puts "You may retake it, but you will have to start again from the beginning\n"
         end
       end
     end
@@ -764,6 +764,8 @@ def show_questions_and_capture_responses(current_survey)
       end
     end
   end
+  return_status = true
+  return_status
 end
 
 def exit_program

@@ -37,9 +37,9 @@ survey\_AR
 ## Requirements for execution:
 * [The Ruby language interpreter](https://www.ruby-lang.org/en/downloads/) must be installed. Please use version 2.1.2.
 
-* [git clone](http://github.com/) the image available at http://github.com/cindyward1/survey\_AR, which will create a survey\_AR directory with db, lib and spec subdirectories.
+* [git clone](http://github.com/) the image available at http://github.com/cindyward1/survey_AR, which will create a survey\_AR directory with db, lib and spec subdirectories.
 
-* [Homebrew](http://brew.sh/) is a package installer for Apple computers. To install homebrew, enter the following at a terminal application prompt **$: ruby -e "$(curl -fsSL 'https://raw.github.com/Homebrew/homebrew/go/install')"**
+* [Homebrew](http://brew.sh/) is a package installer for Apple computers. To install homebrew, enter the following at a terminal application prompt **$: ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"**
 
 * [PostgreSQL](http://http://www.postgresql.org/) is a SQL database package. To install PostgreSQL on an Apple computer, enter the following at a terminal application prompt **$: brew install postgres** . To configure PostgreSQL, enter the following commands at a terminal application prompt $:
  * **$: echo "export PGDATA=/usr/local/var/postgres" >> ~/.bash\_profile**
@@ -60,7 +60,7 @@ survey\_AR
 * To create the database, cd to (clone location)/survey\_AR and enter enter the following at a terminal application prompt **$: rake db:create** followed by **$: rake db:schema:load**
 
 * To run the application, cd to (clone location)/survey\_AR and enter the following at a terminal application prompt **$: ruby survey.rb**
-* You can also test a non-interactive version of the methods against their test cases found in (clone location)/survey\_AR/spec/\*.rb using rspec (see gem reference above). Please use version 3.1.1. If you wish to do this, you must first cd to (clone location)/survey\_AR and enter the following at a terminal application **$: rake db:test:prepare** . This will prepare the test version of the database for use. Then to run rspec, cd to (clone location)/survey\_AR and enter the following string at a terminal application **$: "rspec"** (This command will automatically execute any .rb file it finds in ./spec/.)
+* You can also test a non-interactive version of the methods against their test cases found in (clone location)/survey\_AR/spec/\*.rb using rspec (see gem reference above). Please use version 3.1.1. If you wish to do this, you must first cd to (clone location)/survey\_AR and enter the following at a terminal application **$: rake db:test:prepare** . This will prepare the test version of the database for use. Then to run rspec, cd to (clone location)/survey\_AR and enter the following string at a terminal application **$: rspec** (This command will automatically execute any .rb file it finds in ./spec/.)
 
 * Please note that this repository has only been tested with [Google Chrome browser](http://www.google.com/intl/en/chrome/browser) version 36.0.1985.125 on an iMac running [Apple](http://www.apple.com) OS X version 10.9.4 (Mavericks). Execution on any other computing platform, browser or operating system is at the user's risk.
 
@@ -79,5 +79,5 @@ This Ruby application implements a character user interface to a survey applicat
 * Take a given survey only once and be informed of the date it was previously taken.
 
 ##Thanks:
-* To my wonderful husband Steve Ward for his support, his incredible patience, and for repeatedly testing this program for me.
+* To my wonderful husband Steve Ward for his support and his incredible patience, and for repeatedly testing this program for me.
 * To Dustin Brown for his encouragement.
